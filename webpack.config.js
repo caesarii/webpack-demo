@@ -11,6 +11,9 @@ module.exports = {
   },
   // 启用 source map sources 中的文件会有所变化
   devtool: 'inline-source-map',
+  devServer: {
+    contentBase: './dist'
+  },
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist')
