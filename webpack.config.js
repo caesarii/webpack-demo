@@ -7,7 +7,7 @@ module.exports = {
   mode: 'development',
   entry: {
     app: './src/index.js',
-    print: './src/print.js',
+
   },
   // 启用 source map sources 中的文件会有所变化
   devtool: 'inline-source-map',
@@ -16,6 +16,7 @@ module.exports = {
   },
   output: {
     filename: '[name].bundle.js',
+    chunkFilename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
   },
