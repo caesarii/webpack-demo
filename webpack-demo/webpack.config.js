@@ -27,7 +27,16 @@ module.exports = {
         }),
         new ManifestPlugin()
     ],
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
+            }
+        ]
+    },
     optimization: {
+        usedExports: true,
         moduleIds: 'hashed',
         runtimeChunk: 'single',
         splitChunks: {
