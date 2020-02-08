@@ -1,2 +1,2 @@
-./webpack-demo/dist/*
-./webpack-numbers/dist/*
+webpack-demo/dist/*
+webpack-numbers/dist/*
