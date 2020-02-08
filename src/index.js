@@ -1,4 +1,4 @@
-import printMe from './print.js'
+// import printMe from './print.js'
 
 function getComponent() {
     return import(/* webpackChunkName: "lodash" */ 'lodash').then(({ default: _ }) => {
@@ -6,6 +6,8 @@ function getComponent() {
 
         element.innerHTML = _.join(['Hello', 'webpack'], ' ');
 
+
+        // printMe()
         return element;
 
     }).catch(error => 'An error occurred while loading the component');
