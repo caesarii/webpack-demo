@@ -1,9 +1,8 @@
-import _ from 'lodash'
 
 function component() {
     let element = document.createElement('div');
   
-    // lodash（目前通过一个 script 引入）对于执行这一行是必需的
+    // 全局依赖 lodash
     element.innerHTML = _.join(['Hello', 'webpack'], ' ');
   
     return element;
