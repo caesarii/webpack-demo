@@ -1,7 +1,6 @@
 
-import { log } from './globals'
+import { join } from 'lodash'
 
-log('global log')
 
 function component() {
     let element = document.createElement('div');
@@ -10,7 +9,7 @@ function component() {
     element.innerHTML = join(['Hello', 'webpack'], ' ');
 
     // 假设我们处于 `window` 上下文
-  //  this.alert('Hmmm, this probably isn\'t a great idea...')
+   that.alert('Hmmm, this probably isn\'t a great idea...')
   
     return element;
   }

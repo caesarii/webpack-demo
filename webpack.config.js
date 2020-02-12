@@ -9,10 +9,10 @@ module.exports = {
   },
   module: {
     rules: [
-      // {
-      //   test: require.resolve('./src/index.js'),
-      //   use: 'imports-loader?this=>window'
-      // },
+      {
+        test: require.resolve('./src/index.js'),
+        use: 'imports-loader?that=>window'
+      },
       {
         test: require.resolve('./src/globals.js'),
         use: 'exports-loader?log=log'
