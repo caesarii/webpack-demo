@@ -12,12 +12,8 @@ module.exports = {
           {
               test: /\.css$/,
               use: [
-                  {
-                      loader: path.resolve('./loaders/style-loader')
-                  },
-                  {
-                      loader: path.resolve('./loaders/css-loader')
-                  }
+                  'style-loader',
+                  'css-loader'
               ]
           },
       ]
@@ -27,11 +23,11 @@ module.exports = {
           title: 'writing a loader'
       })
   ],
-  // 首先从 loaders 目录查询 loader
-//   resolveLoader: {
-//       modules: [
-//           'node_modules',
-//           path.resolve(__dirname, 'loaders'),
-//       ]
-//   }
+//   首先从 loaders 目录查询 loader
+  resolveLoader: {
+      modules: [
+          'node_modules',
+          path.resolve(__dirname, 'loaders'),
+      ]
+  }
 };
