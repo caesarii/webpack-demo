@@ -7,6 +7,10 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
   },
+  mode: 'development',
+  devServer: {
+    contentBase: './dist'
+  },
   module: {
       rules: [
           {
@@ -18,6 +22,7 @@ module.exports = {
           },
       ]
   },
+  devtool: 'inline-source-map',
   plugins: [
       new HtmlWebpackPlugin({
           title: 'writing a loader'

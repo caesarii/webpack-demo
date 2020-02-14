@@ -1,5 +1,14 @@
 
+@media screen and (max-width: 300px) {
+    body {
+        background-color:lightblue;
+    }
+}
 
 .hello {
     color: red;
+}
+
+.world{
+    background-color: #000;
 }

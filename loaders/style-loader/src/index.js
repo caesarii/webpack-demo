@@ -7,7 +7,15 @@ import schema from './options.json';
 
 const loaderApi = () => {};
 
+// request 是当前处理的 css 的绝对路径
+// /Users/qinghewang/code/webpack-demo/node_modules/css-loader/dist/cjs.js!/Users/qinghewang/code/webpack-demo/src/style.css
+// stringifyRequest
+// ../node_modules/css-loader/dist/cjs.js!./style.css
+
 loaderApi.pitch = function loader(request) {
+  console.log('hello style loader src', request)
+  console.log('stringifyRequesst', loaderUtils.stringifyRequest(this, request))
+  // options 来自 this.query
   const options = loaderUtils.getOptions(this) || {};
 
   validateOptions(schema, options, {
@@ -29,154 +37,162 @@ loaderApi.pitch = function loader(request) {
 
   switch (injectType) {
     case 'linkTag': {
-      const hmrCode = this.hot
-        ? `
-if (module.hot) {
-  module.hot.accept(
-    ${loaderUtils.stringifyRequest(this, `!!${request}`)},
-    function() {
-     ${
-       esModule
-         ? `update(content);`
-         : `var newContent = require(${loaderUtils.stringifyRequest(
-             this,
-             `!!${request}`
-           )});
+      let hmrCode = ''
+      if (this.hot) {
+        hmrCode = 
+        `if (module.hot) {
+          module.hot.accept(
+            ${loaderUtils.stringifyRequest(this, `!!${request}`)},
+            function() {
+            ${
+              esModule
+                ? `update(content);`
+                : `var newContent = require(${loaderUtils.stringifyRequest(
+                    this,
+                    `!!${request}`
+                  )});
 
-           newContent = newContent.__esModule ? newContent.default : newContent;
+                  newContent = newContent.__esModule ? newContent.default : newContent;
 
-           update(newContent);`
-     }
-    }
-  );
+                  update(newContent);`
+            }
+            }
+          );
 
-  module.hot.dispose(function() {
-    update();
-  });
-}`
-        : '';
-
-      return `${
-        esModule
-          ? `import api from ${loaderUtils.stringifyRequest(
-              this,
-              `!${path.join(__dirname, 'runtime/injectStylesIntoLinkTag.js')}`
-            )};
-            import content from ${loaderUtils.stringifyRequest(
-              this,
-              `!!${request}`
-            )};`
-          : `var api = require(${loaderUtils.stringifyRequest(
-              this,
-              `!${path.join(__dirname, 'runtime/injectStylesIntoLinkTag.js')}`
-            )});
-            var content = require(${loaderUtils.stringifyRequest(
-              this,
-              `!!${request}`
-            )});
-
-            content = content.__esModule ? content.default : content;`
+          module.hot.dispose(function() {
+            update();
+          });
+        }`
       }
 
-var options = ${JSON.stringify(options)};
+      const commonModleCode = 
+        `var api = require(${loaderUtils.stringifyRequest(
+          this,
+          `!${path.join(__dirname, 'runtime/injectStylesIntoLinkTag.js')}`
+        )});
+        var content = require(${loaderUtils.stringifyRequest(
+          this,
+          `!!${request}`
+        )});
 
-options.insert = ${insert};
+        content = content.__esModule ? content.default : content;`
+      
+      const esModuleCode = 
+        `import api from ${loaderUtils.stringifyRequest(
+          this,
+          `!${path.join(__dirname, 'runtime/injectStylesIntoLinkTag.js')}`
+        )};
+        import content from ${loaderUtils.stringifyRequest(
+          this,
+          `!!${request}`
+        )};`
 
-var update = api(content, options);
+      return `
+        ${esModule ? commonModleCode : esModuleCode}
 
-${hmrCode}
+        var options = ${JSON.stringify(options)};
 
-${esModule ? `export default {}` : ''}`;
+        options.insert = ${insert};
+
+        var update = api(content, options);
+
+        ${hmrCode}
+
+        ${esModule ? `export default {}` : ''}`;
     }
 
     case 'lazyStyleTag':
     case 'lazySingletonStyleTag': {
       const isSingleton = injectType === 'lazySingletonStyleTag';
 
-      const hmrCode = this.hot
-        ? `
-if (module.hot) {
-  var lastRefs = module.hot.data && module.hot.data.refs || 0;
-
-  if (lastRefs) {
-    exported.use();
-
-    if (!content.locals) {
-      refs = lastRefs;
-    }
-  }
-
-  if (!content.locals) {
-    module.hot.accept();
-  }
-
-  module.hot.dispose(function(data) {
-    data.refs = content.locals ? 0 : refs;
-
-    if (dispose) {
-      dispose();
-    }
-  });
-}`
-        : '';
-
-      return `${
-        esModule
-          ? `import api from ${loaderUtils.stringifyRequest(
-              this,
-              `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
-            )};
-            import content from ${loaderUtils.stringifyRequest(
-              this,
-              `!!${request}`
-            )};`
-          : `var api = require(${loaderUtils.stringifyRequest(
-              this,
-              `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
-            )});
-            var content = require(${loaderUtils.stringifyRequest(
-              this,
-              `!!${request}`
-            )});
-
-            content = content.__esModule ? content.default : content;
-
-            if (typeof content === 'string') {
-              content = [[module.id, content, '']];
-            }`
+      let hmrCode = ''
+      if (this.hot) {
+        hmrCode = 
+        `if (module.hot) {
+          var lastRefs = module.hot.data && module.hot.data.refs || 0;
+        
+          if (lastRefs) {
+            exported.use();
+        
+            if (!content.locals) {
+              refs = lastRefs;
+            }
+          }
+        
+          if (!content.locals) {
+            module.hot.accept();
+          }
+        
+          module.hot.dispose(function(data) {
+            data.refs = content.locals ? 0 : refs;
+        
+            if (dispose) {
+              dispose();
+            }
+          });
+        }`
       }
 
-var refs = 0;
-var dispose;
-var options = ${JSON.stringify(options)};
+      const commonModuleCode = 
+        `var api = require(${loaderUtils.stringifyRequest(
+          this,
+          `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
+        )});
+        var content = require(${loaderUtils.stringifyRequest(
+          this,
+          `!!${request}`
+        )});
 
-options.insert = ${insert};
-options.singleton = ${isSingleton};
+        content = content.__esModule ? content.default : content;
 
-var exported = {};
+        if (typeof content === 'string') {
+          content = [[module.id, content, '']];
+        }`
 
-if (content.locals) {
-  exported.locals = content.locals;
-}
+        const esModuleCode = 
+          `import api from ${loaderUtils.stringifyRequest(
+            this,
+            `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
+          )};
+          import content from ${loaderUtils.stringifyRequest(
+            this,
+            `!!${request}`
+          )};`
 
-exported.use = function() {
-  if (!(refs++)) {
-    dispose = api(content, options);
-  }
+      return `
+        ${ esModule ? esModuleCode : commonModuleCode }
 
-  return exported;
-};
+        var refs = 0;
+        var dispose;
+        var options = ${JSON.stringify(options)};
 
-exported.unuse = function() {
-  if (refs > 0 && !--refs) {
-    dispose();
-    dispose = null;
-  }
-};
+        options.insert = ${insert};
+        options.singleton = ${isSingleton};
 
-${hmrCode}
+        var exported = {};
 
-${esModule ? 'export default' : 'module.exports ='} exported;`;
+        if (content.locals) {
+          exported.locals = content.locals;
+        }
+
+        exported.use = function() {
+          if (!(refs++)) {
+            dispose = api(content, options);
+          }
+
+          return exported;
+        };
+
+        exported.unuse = function() {
+          if (refs > 0 && !--refs) {
+            dispose();
+            dispose = null;
+          }
+        };
+
+        ${hmrCode}
+
+        ${esModule ? 'export default' : 'module.exports ='} exported;`;
     }
 
     case 'styleTag':
@@ -184,78 +200,88 @@ ${esModule ? 'export default' : 'module.exports ='} exported;`;
     default: {
       const isSingleton = injectType === 'singletonStyleTag';
 
-      const hmrCode = this.hot
-        ? `
-if (module.hot) {
-  if (!content.locals) {
-    module.hot.accept(
-      ${loaderUtils.stringifyRequest(this, `!!${request}`)},
-      function () {
-        ${
-          esModule
-            ? `update(content);`
-            : `var newContent = require(${loaderUtils.stringifyRequest(
-                this,
-                `!!${request}`
-              )});
-
-              newContent = newContent.__esModule ? newContent.default : newContent;
-
-              if (typeof newContent === 'string') {
-                newContent = [[module.id, newContent, '']];
+      let hmrCode = ''
+      if (this.hot) {
+        hmrCode = `
+        if (module.hot) {
+          if (!content.locals) {
+            module.hot.accept(
+              ${loaderUtils.stringifyRequest(this, `!!${request}`)},
+              function () {
+                ${
+                  esModule
+                    ? `update(content);`
+                    : `var newContent = require(${loaderUtils.stringifyRequest(
+                        this,
+                        `!!${request}`
+                      )});
+        
+                      newContent = newContent.__esModule ? newContent.default : newContent;
+        
+                      if (typeof newContent === 'string') {
+                        newContent = [[module.id, newContent, '']];
+                      }
+        
+                      update(newContent);`
+                }
               }
-
-              update(newContent);`
-        }
-      }
-    )
-  }
-
-  module.hot.dispose(function() { 
-    update();
-  });
-}`
-        : '';
-
-      return `${
-        esModule
-          ? `import api from ${loaderUtils.stringifyRequest(
-              this,
-              `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
-            )};
-            import content from ${loaderUtils.stringifyRequest(
-              this,
-              `!!${request}`
-            )};
-            var clonedContent = content;`
-          : `var api = require(${loaderUtils.stringifyRequest(
-              this,
-              `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
-            )});
-            var content = require(${loaderUtils.stringifyRequest(
-              this,
-              `!!${request}`
-            )});
-
-            content = content.__esModule ? content.default : content;
-
-            if (typeof content === 'string') {
-              content = [[module.id, content, '']];
-            }`
+            )
+          }
+        
+          module.hot.dispose(function() { 
+            update();
+          });
+        }`
       }
 
-var options = ${JSON.stringify(options)};
+      const commonModuleCode = 
+        `var api = require(${loaderUtils.stringifyRequest(
+          this,
+          `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
+        )});
+        var content = require(${loaderUtils.stringifyRequest(
+          this,
+          `!!${request}`
+        )});
 
-options.insert = ${insert};
-options.singleton = ${isSingleton};
+        content = content.__esModule ? content.default : content;
 
-var update = api(content, options);
+        if (typeof content === 'string') {
+          content = [[module.id, content, '']];
+        }`
 
-var exported = content.locals ? content.locals : {};
+      const esModleCode = 
+        `import api from ${loaderUtils.stringifyRequest(
+          this,
+          `!${path.join(__dirname, 'runtime/injectStylesIntoStyleTag.js')}`
+        )};
+        import content from ${loaderUtils.stringifyRequest(
+          this,
+          `!!${request}`
+        )};
+        var clonedContent = content;`
 
-${hmrCode}
+      return `
+        ${ esModule ? esModleCode : commonModuleCode }
 
-${esModule ? 'export default' : 'module.exports ='} exported;`;
+        console.log('api', api)
+
+        // css content, 数组格式, why
+        console.log('content', content)
+
+        var options = ${JSON.stringify(options)};
+
+        options.insert = ${insert};
+        options.singleton = ${isSingleton};
+
+        var update = api(content, options);
+
+        var exported = content.locals ? content.locals : {};
+
+        ${hmrCode}
+
+        ${esModule ? 'export default' : 'module.exports ='} exported;
+      `;  
     }
   }
 };
