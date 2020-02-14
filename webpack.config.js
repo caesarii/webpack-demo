@@ -12,8 +12,12 @@ module.exports = {
           {
               test: /\.css$/,
               use: [
-                  'style-loader',
-                  'css-loader',
+                  {
+                      loader: path.resolve('./loaders/style-loader')
+                  },
+                  {
+                      loader: path.resolve('./loaders/css-loader')
+                  }
               ]
           },
       ]
@@ -22,5 +26,12 @@ module.exports = {
       new HtmlWebpackPlugin({
           title: 'writing a loader'
       })
-  ]
+  ],
+  // 首先从 loaders 目录查询 loader
+//   resolveLoader: {
+//       modules: [
+//           'node_modules',
+//           path.resolve(__dirname, 'loaders'),
+//       ]
+//   }
 };
