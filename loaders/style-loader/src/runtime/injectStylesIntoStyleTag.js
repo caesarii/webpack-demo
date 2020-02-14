@@ -290,6 +290,7 @@ module.exports = (list, options) => {
 
   // 以下热更逻辑
   return function update(newList) {
+    console.log('hot update', newList)
     newList = newList || [];
 
     if (Object.prototype.toString.call(newList) !== '[object Array]') {

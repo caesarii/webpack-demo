@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack');
+
 
 module.exports = {
   entry: './src/index.js',
@@ -26,6 +28,8 @@ module.exports = {
   plugins: [
       new HtmlWebpackPlugin({
           title: 'writing a loader'
+      }),
+      new webpack.HotModuleReplacementPlugin({
       })
   ],
 //   首先从 loaders 目录查询 loader

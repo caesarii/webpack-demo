@@ -35,6 +35,8 @@ loaderApi.pitch = function loader(request) {
 
   delete options.esModule;
 
+  console.log('this hot', this.hot)
+
   switch (injectType) {
     case 'linkTag': {
       let hmrCode = ''
@@ -204,10 +206,13 @@ loaderApi.pitch = function loader(request) {
       if (this.hot) {
         hmrCode = `
         if (module.hot) {
+          console.log('hmr code 1')
           if (!content.locals) {
+            console.log('hmr code 2')
             module.hot.accept(
               ${loaderUtils.stringifyRequest(this, `!!${request}`)},
               function () {
+                console.log('hmr code 2.1')
                 ${
                   esModule
                     ? `update(content);`
@@ -227,8 +232,11 @@ loaderApi.pitch = function loader(request) {
               }
             )
           }
+
+          console.log('hmr code 3')
         
           module.hot.dispose(function() { 
+            console.log('hmr code 4')
             update();
           });
         }`
