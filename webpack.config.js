@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: './src/index.js',
@@ -15,18 +16,11 @@ module.exports = {
                   'css-loader',
               ]
           },
-          {
-              test: /\.(png|svg|jpg|gif)$/,
-              use: [
-                  'file-loader',
-              ]
-          },
-          {
-              test: /\.(woff|woff2|eot|ttf|otf|TTF)$/,
-              use: [
-                  'file-loader'
-              ]
-          }
       ]
-  }
+  },
+  plugins: [
+      new HtmlWebpackPlugin({
+          title: 'writing a loader'
+      })
+  ]
 };
