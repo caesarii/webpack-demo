@@ -201,7 +201,7 @@ loaderApi.pitch = function loader(request) {
     case 'singletonStyleTag':
     default: {
       const isSingleton = injectType === 'singletonStyleTag';
-
+      console.log('esModule', esModule)
       let hmrCode = ''
       if (this.hot) {
         hmrCode = `

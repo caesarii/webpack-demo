@@ -22,6 +22,10 @@ module.exports = {
                   'css-loader'
               ]
           },
+          {
+            test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
+            loader: 'url-loader',
+          }
       ]
   },
   devtool: 'inline-source-map',
@@ -35,8 +39,9 @@ module.exports = {
 //   首先从 loaders 目录查询 loader
   resolveLoader: {
       modules: [
-          'node_modules',
           path.resolve(__dirname, 'loaders'),
+          'node_modules',
+
       ]
   }
 };
